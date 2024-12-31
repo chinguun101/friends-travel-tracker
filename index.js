@@ -10,11 +10,20 @@ const port = 3000;
 
 
 const db = new pg.Client({
-  connectionString: process.env.DATABASE_URL, // Fetch from environment variable
+  connectionString: 'postgresql://world_4wbb_user:SH8qhINAgc56Da5vo7pd9W4JKgdCimgQ@dpg-ctpeeu2j1k6c739j09s0-a.oregon-postgres.render.com/world_4wbb',
   ssl: {
     rejectUnauthorized: false,
   },
 });
+
+
+// const db = new pg.Client({
+//   user: 'postgres',
+//   host: 'localhost',
+//   password: 'Minerva@121',
+//   database: 'world',
+//   port: 5433
+// })
 
 db.connect();
 

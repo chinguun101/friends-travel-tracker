@@ -98,17 +98,20 @@ path:hover {
   justify-content: center;
 }
 
-.hover-info {
+#hover-info {
   position: absolute;
   background-color: #fff5e6; /* Light yellow for paper-like feel */
   border: 2px dashed #000; /* Dashed border for hand-drawn style */
-  padding: 5px;
+  padding: 5px 10px;
   border-radius: 5px;
   pointer-events: none;
   font-size: 14px;
   z-index: 1000;
-  display: none;
+  max-width: 80%; /* Prevent tooltip from going off-screen */
+  word-wrap: break-word; /* Break long text */
 }
+
+
 
 /* Smaller Tab Styles */
 .tab-view {
@@ -202,4 +205,9 @@ path:hover {
   .tab-view > ul {
     font-size: 12px;
   }
+
+  #hover-info {
+    font-size: 12px; /* Smaller font for mobile */
+    padding: 5px; /* Reduce padding */
+}
 }

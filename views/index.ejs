@@ -389,65 +389,79 @@
   </form>
 
  <script>
-    // Tooltip element
-    const hoverInfo = document.getElementById('hover-info');
+   // Tooltip element
+const hoverInfo = document.getElementById('hover-info');
 
-    // Add event listeners to all paths
-    document.querySelectorAll('path').forEach(path => {
-        // Tooltip on hover
-        path.addEventListener('mouseenter', (event) => {
-            hoverInfo.textContent = event.target.getAttribute('title');
+// Add event listeners to all paths
+document.querySelectorAll('path').forEach(path => {
+    // Show tooltip on hover or touchstart
+    const showTooltip = (event) => {
+        const tooltipText = event.target.getAttribute('title');
+        if (tooltipText) {
+            hoverInfo.textContent = tooltipText;
             hoverInfo.style.display = 'block';
-        });
-
-        path.addEventListener('mousemove', (event) => {
-            hoverInfo.style.left = `${event.pageX + 10}px`;
-            hoverInfo.style.top = `${event.pageY + 10}px`;
-        });
-
-        path.addEventListener('mouseleave', () => {
-            hoverInfo.style.display = 'none';
-        });
-
-        // Toggle visited state on click
-        path.addEventListener('click', async (event) => {
-            const countryCode = event.target.id;
-
-            try {
-                console.log(countryCode); // Debugging
-
-                const response = await fetch('/toggle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ countryCode }),
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    // Toggle the CSS class to update coloring
-                    event.target.classList.toggle('visited', data.visited);
-                    event.target.classList.toggle('not-visited', !data.visited);
-                } else {
-                    console.error('Error updating visited state:', data.error);
-                }
-            } catch (err) {
-                console.error('Request failed:', err);
-            }
-        });
-    });
-
-    // Pre-fill visited countries based on server data
-    const country_codes = "<%= countries %>".split(',');
-    country_codes.forEach(code => {
-        const countryElement = document.getElementById(code);
-        if (countryElement) {
-            countryElement.classList.add('visited'); // Mark as visited
-        } else {
-            console.warn(`Country not found: ${code}`); // Debugging
+            const x = event.pageX || event.touches[0].pageX;
+            const y = event.pageY || event.touches[0].pageY;
+            hoverInfo.style.left = `${x + 10}px`;
+            hoverInfo.style.top = `${y + 10}px`;
         }
-    });
+    };
+
+    // Hide tooltip on mouseleave or touchend
+    const hideTooltip = () => {
+        hoverInfo.style.display = 'none';
+    };
+
+    // Toggle visited state on click or touchend
+    const toggleVisited = async (event) => {
+        const countryCode = event.target.id;
+
+        try {
+            console.log(countryCode); // Debugging
+
+            const response = await fetch('/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ countryCode }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Toggle the CSS class to update coloring
+                event.target.classList.toggle('visited', data.visited);
+                event.target.classList.toggle('not-visited', !data.visited);
+            } else {
+                console.error('Error updating visited state:', data.error);
+            }
+        } catch (err) {
+            console.error('Request failed:', err);
+        }
+    };
+
+    // Add event listeners for both desktop and mobile
+    path.addEventListener('mouseenter', showTooltip);
+    path.addEventListener('mousemove', showTooltip);
+    path.addEventListener('mouseleave', hideTooltip);
+
+    path.addEventListener('touchstart', showTooltip, { passive: true });
+    path.addEventListener('touchmove', showTooltip, { passive: true });
+    path.addEventListener('touchend', hideTooltip);
+    path.addEventListener('click', toggleVisited);
+    path.addEventListener('touchend', toggleVisited);
+});
+
+// Pre-fill visited countries based on server data
+const country_codes = "<%= countries %>".split(',');
+country_codes.forEach(code => {
+    const countryElement = document.getElementById(code);
+    if (countryElement) {
+        countryElement.classList.add('visited'); // Mark as visited
+    } else {
+        console.warn(`Country not found: ${code}`); // Debugging
+    }
+});
  
 </script>
 </body>
