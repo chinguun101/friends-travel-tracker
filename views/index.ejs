@@ -391,16 +391,20 @@
 
  <script>
    // Tooltip element
+// Tooltip element
 const hoverInfo = document.getElementById('hover-info');
 
 // Add event listeners to all paths
 document.querySelectorAll('path').forEach(path => {
+    let touchTimeout;
+
     // Show tooltip on hover or touchstart
     const showTooltip = (event) => {
         const tooltipText = event.target.getAttribute('title');
         if (tooltipText) {
             hoverInfo.textContent = tooltipText;
             hoverInfo.style.display = 'block';
+
             const x = event.pageX || event.touches[0].pageX;
             const y = event.pageY || event.touches[0].pageY;
             hoverInfo.style.left = `${x + 10}px`;
@@ -415,11 +419,10 @@ document.querySelectorAll('path').forEach(path => {
 
     // Toggle visited state on click or touchend
     const toggleVisited = async (event) => {
+        event.preventDefault(); // Prevent double touches from causing unintended behavior
         const countryCode = event.target.id;
 
         try {
-            console.log(countryCode); // Debugging
-
             const response = await fetch('/toggle', {
                 method: 'POST',
                 headers: {
@@ -446,11 +449,19 @@ document.querySelectorAll('path').forEach(path => {
     path.addEventListener('mousemove', showTooltip);
     path.addEventListener('mouseleave', hideTooltip);
 
-    path.addEventListener('touchstart', showTooltip, { passive: true });
+    path.addEventListener('touchstart', (event) => {
+        clearTimeout(touchTimeout); // Prevent previous touches from sticking
+        showTooltip(event);
+    }, { passive: true });
+
     path.addEventListener('touchmove', showTooltip, { passive: true });
-    path.addEventListener('touchend', hideTooltip);
+
+    path.addEventListener('touchend', (event) => {
+        hideTooltip();
+        touchTimeout = setTimeout(() => toggleVisited(event), 200); // Prevent accidental double toggles
+    });
+
     path.addEventListener('click', toggleVisited);
-    path.addEventListener('touchend', toggleVisited);
 });
 
 // Pre-fill visited countries based on server data
@@ -463,7 +474,7 @@ country_codes.forEach(code => {
         console.warn(`Country not found: ${code}`); // Debugging
     }
 });
- 
+
 </script>
 </body>
 
