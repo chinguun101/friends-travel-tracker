@@ -16,26 +16,12 @@ const db = new pg.Client({
   },
 });
 
-
-// const db = new pg.Client({
-//   user: 'postgres',
-//   host: 'localhost',
-//   password: 'Minerva@121',
-//   database: 'world',
-//   port: 5433
-// })
-
 db.connect();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 let currentUserId = 1;
-
-let users = [
-  { id: 1, name: "Angela", color: "teal" },
-  { id: 2, name: "Jack", color: "powderblue" },
-];
 
 async function checkVisisted() {
   const result = await db.query(

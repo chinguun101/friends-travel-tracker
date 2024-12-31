@@ -87,7 +87,7 @@ path.visited {
 path:hover {
   fill: #ff6f61; /* Change to a playful orange on hover */
 }
-p {
+.instruction {
   display: flex;
   font-family: "Comic Sans MS", "Chalkboard SE", sans-serif;
   color: #383d46;

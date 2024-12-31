@@ -390,36 +390,37 @@
   </form>
 
  <script>
-   // Tooltip element
 // Tooltip element
 const hoverInfo = document.getElementById('hover-info');
 
 // Add event listeners to all paths
 document.querySelectorAll('path').forEach(path => {
-    let touchTimeout;
+    // Flag to track touch interaction
+    let isTouching = false;
 
-    // Show tooltip on hover or touchstart
+    // Show tooltip
     const showTooltip = (event) => {
         const tooltipText = event.target.getAttribute('title');
         if (tooltipText) {
             hoverInfo.textContent = tooltipText;
             hoverInfo.style.display = 'block';
 
-            const x = event.pageX || event.touches[0].pageX;
-            const y = event.pageY || event.touches[0].pageY;
+            const x = event.pageX || (event.touches && event.touches[0].pageX);
+            const y = event.pageY || (event.touches && event.touches[0].pageY);
+
             hoverInfo.style.left = `${x + 10}px`;
             hoverInfo.style.top = `${y + 10}px`;
         }
     };
 
-    // Hide tooltip on mouseleave or touchend
+    // Hide tooltip
     const hideTooltip = () => {
         hoverInfo.style.display = 'none';
     };
 
-    // Toggle visited state on click or touchend
+    // Toggle visited state
     const toggleVisited = async (event) => {
-        event.preventDefault(); // Prevent double touches from causing unintended behavior
+        event.preventDefault(); // Prevent scrolling or unintended behavior
         const countryCode = event.target.id;
 
         try {
@@ -444,24 +445,35 @@ document.querySelectorAll('path').forEach(path => {
         }
     };
 
-    // Add event listeners for both desktop and mobile
+    // Handle touchstart
+    path.addEventListener('touchstart', (event) => {
+        isTouching = true; // Set flag to true
+        showTooltip(event); // Show tooltip
+    }, { passive: true });
+
+    // Handle touchmove
+    path.addEventListener('touchmove', showTooltip, { passive: true });
+
+    // Handle touchend
+    path.addEventListener('touchend', (event) => {
+        hideTooltip(); // Hide tooltip
+        if (isTouching) {
+            toggleVisited(event); // Toggle visited state only if a touch occurred
+        }
+        isTouching = false; // Reset flag
+    });
+
+    // Handle mouse interactions (for desktop)
     path.addEventListener('mouseenter', showTooltip);
     path.addEventListener('mousemove', showTooltip);
     path.addEventListener('mouseleave', hideTooltip);
 
-    path.addEventListener('touchstart', (event) => {
-        clearTimeout(touchTimeout); // Prevent previous touches from sticking
-        showTooltip(event);
-    }, { passive: true });
-
-    path.addEventListener('touchmove', showTooltip, { passive: true });
-
-    path.addEventListener('touchend', (event) => {
-        hideTooltip();
-        touchTimeout = setTimeout(() => toggleVisited(event), 200); // Prevent accidental double toggles
+    // Handle click (for desktop)
+    path.addEventListener('click', (event) => {
+        if (!isTouching) { // Prevent double-trigger on devices that fire both touch and click
+            toggleVisited(event);
+        }
     });
-
-    path.addEventListener('click', toggleVisited);
 });
 
 // Pre-fill visited countries based on server data
@@ -474,6 +486,7 @@ country_codes.forEach(code => {
         console.warn(`Country not found: ${code}`); // Debugging
     }
 });
+
 
 </script>
 </body>
