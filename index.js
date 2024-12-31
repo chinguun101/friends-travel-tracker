@@ -10,7 +10,7 @@ const port = 3000;
 
 
 const db = new pg.Client({
-  connectionString: 'postgresql://world_4wbb_user:SH8qhINAgc56Da5vo7pd9W4JKgdCimgQ@dpg-ctpeeu2j1k6c739j09s0-a.oregon-postgres.render.com/world_4wbb',
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
@@ -118,7 +118,6 @@ app.post("/new", async (req, res) => {
 // Toggle the visited state of a country
 app.post("/toggle", async (req, res) => {
   const countryCode = req.body.countryCode;
-  console.log(countryCode);
 
   try {
     // Check if the country is already visited by the current user

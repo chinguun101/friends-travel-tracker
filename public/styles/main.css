@@ -76,7 +76,7 @@ path {
   fill: #fff; /* Default white background */
   stroke: #000; /* Black stroke for a coloring effect */
   stroke-width: 0.5px;
-  transition: 0.5s;
+  transition: 0.2s;
   cursor: pointer;
 }
 
@@ -87,7 +87,14 @@ path.visited {
 path:hover {
   fill: #ff6f61; /* Change to a playful orange on hover */
 }
-
+p {
+  display: flex;
+  font-family: "Comic Sans MS", "Chalkboard SE", sans-serif;
+  color: #383d46;
+  font-size: 10px;
+  align-items: center;
+  justify-content: center;
+}
 .total-count {
   display: flex;
   font-family: "Comic Sans MS", "Chalkboard SE", sans-serif;
@@ -179,7 +186,7 @@ path:hover {
   padding: 20px 30px; /* Smaller padding inside content */
   box-sizing: border-box;
   opacity: 0;
-  transition: all 0.5s;
+  transition: all 0.2s;
 }
 
 .tab-view > .tab-content-first:checked ~ ul .tab-content-first,

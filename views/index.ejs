@@ -385,6 +385,7 @@
   <h2 class="total-count">Total Countries: <%=total%></h2>
   <form action="/add" method="post" class="controls">
     <input type="text" name="country" autofocus placeholder="<%= locals.error ? error :  'Enter country name'%>">
+    <p class="instruction"> - You can also click on the country map to add it</p>
     <button type="submit">Add</button>
   </form>
 
